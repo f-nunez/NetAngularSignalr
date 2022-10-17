@@ -5,7 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddHealthChecks()
     .AddCheck("ICMP_01",
-        new ICMPHealthCheck("www.ryadel.com", 100))
+        new ICMPHealthCheck("www.angular.io", 100))
     .AddCheck("ICMP_02",
         new ICMPHealthCheck("www.google.com", 100))
     .AddCheck("ICMP_03",
