@@ -7,6 +7,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "HealthCheck", "HealthCheck"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fnunez.Nas.HealthCheck.API", "HealthCheck\Fnunez.Nas.HealthCheck.API\Fnunez.Nas.HealthCheck.API.csproj", "{EBF4C91E-0CCA-4205-9E9A-02BDB433A64A}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WorldCities", "WorldCities", "{7421A181-DFEF-4871-89CD-A0ABC4F427CB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fnunez.Nas.WorldCities.API", "WorldCities\Fnunez.Nas.WorldCities.API\Fnunez.Nas.WorldCities.API.csproj", "{F8BDC51F-1655-4C46-8157-5B1A1F77392F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,8 +24,13 @@ Global
 		{EBF4C91E-0CCA-4205-9E9A-02BDB433A64A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EBF4C91E-0CCA-4205-9E9A-02BDB433A64A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EBF4C91E-0CCA-4205-9E9A-02BDB433A64A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8BDC51F-1655-4C46-8157-5B1A1F77392F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8BDC51F-1655-4C46-8157-5B1A1F77392F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8BDC51F-1655-4C46-8157-5B1A1F77392F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8BDC51F-1655-4C46-8157-5B1A1F77392F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{EBF4C91E-0CCA-4205-9E9A-02BDB433A64A} = {101CFC72-575A-4567-A7AE-DDDFA276164A}
+		{F8BDC51F-1655-4C46-8157-5B1A1F77392F} = {7421A181-DFEF-4871-89CD-A0ABC4F427CB}
 	EndGlobalSection
 EndGlobal
