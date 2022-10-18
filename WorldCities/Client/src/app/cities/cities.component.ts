@@ -11,6 +11,7 @@ import { ICity } from '../shared/models/city';
 export class CitiesComponent implements OnInit {
   baseApiUrl: string = environment.baseApiUrl;
   cities!: ICity[];
+  displayedColumns: string[] = ['id', 'name', 'lat', 'lon'];
 
   constructor(private http: HttpClient) { }
 
