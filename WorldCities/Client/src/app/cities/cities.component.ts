@@ -21,6 +21,8 @@ export class CitiesComponent implements OnInit {
   defaultPageSize: number = 10;
   defaultSortColumn: string = 'name';
   defaultSortOrder: "asc" | "desc" = "asc";
+  defaultFilterColumn: string = 'name';
+  filterQuery?: string;
 
   constructor(private http: HttpClient) { }
 
@@ -39,6 +41,12 @@ export class CitiesComponent implements OnInit {
         ? this.sort.direction
         : this.defaultSortOrder);
 
+    if (this.filterQuery) {
+      params = params
+        .set("filterColumn", this.defaultFilterColumn)
+        .set("filterQuery", this.filterQuery);
+    }
+
     this.http.get<any>(this.baseApiUrl + 'cities', { params })
       .subscribe({
         next: response => {
@@ -51,10 +59,11 @@ export class CitiesComponent implements OnInit {
       });
   }
 
-  loadData() {
+  loadData(query?: string) {
     const pageEvent: PageEvent = new PageEvent();
     pageEvent.pageIndex = this.defaultPageIndex;
     pageEvent.pageSize = this.defaultPageSize;
+    this.filterQuery = query;
     this.getData(pageEvent);
   }
 
