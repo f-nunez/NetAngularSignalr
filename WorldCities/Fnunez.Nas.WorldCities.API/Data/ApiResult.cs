@@ -107,7 +107,7 @@ public class ApiResult<T>
         string sortColumn = null,
         string sortOrder = null)
     {
-        var count = await source.CountAsync();
+        int count = await source.CountAsync();
         if (!string.IsNullOrEmpty(sortColumn)
             && IsValidProperty(sortColumn))
         {
@@ -115,13 +115,16 @@ public class ApiResult<T>
                 && sortOrder.ToUpper() == "ASC"
                 ? "ASC"
                 : "DESC";
-            source = source.OrderBy(string.Empty);
+            source = source.OrderBy(
+                string.Format("{0} {1}", sortColumn, sortOrder)
+            );
         }
+
         source = source
             .Skip(pageIndex * pageSize)
             .Take(pageSize);
 
-        var data = await source.ToListAsync();
+        List<T> data = await source.ToListAsync();
 
         return new ApiResult<T>(
             data,
@@ -141,7 +144,7 @@ public class ApiResult<T>
         string propertyName,
         bool throwExceptionIfNotFound = true)
     {
-        var prop = typeof(T).GetProperty(
+        PropertyInfo prop = typeof(T).GetProperty(
             propertyName,
             BindingFlags.IgnoreCase |
             BindingFlags.Public |
