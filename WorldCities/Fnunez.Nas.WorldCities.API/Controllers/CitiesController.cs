@@ -29,16 +29,8 @@ public class CitiesController : ControllerBase
         string filterColumn = null,
         string filterQuery = null)
     {
-        DbSet<City> cities = _context.Cities;
-
-        if (!string.IsNullOrEmpty(filterColumn)
-            && !string.IsNullOrEmpty(filterQuery))
-        {
-            cities = (DbSet<City>)cities.Where(c => c.Name.StartsWith(filterQuery));
-        }
-
         return await ApiResult<City>.CreateAsync(
-            cities,
+            _context.Cities.AsNoTracking(),
             pageIndex,
             pageSize,
             sortColumn,
