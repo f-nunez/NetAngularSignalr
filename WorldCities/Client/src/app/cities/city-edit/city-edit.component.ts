@@ -4,8 +4,8 @@ import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/fo
 import { ActivatedRoute, Router } from '@angular/router';
 import { map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { ICity } from '../shared/models/city';
-import { ICountry } from '../shared/models/country';
+import { ICity } from '../../shared/models/city';
+import { ICountry } from '../../shared/models/country';
 
 @Component({
   selector: 'app-city-edit',
