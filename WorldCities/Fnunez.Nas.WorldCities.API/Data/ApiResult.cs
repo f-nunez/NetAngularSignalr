@@ -65,6 +65,17 @@ public class ApiResult<T>
     public string SortOrder { get; set; }
 
     /// <summary>
+    /// Filter Column name (or null if none set)
+    /// </summary>
+    public string FilterColumn { get; set; }
+    
+    /// <summary>
+    /// Filter Query string 
+    /// (to be used within the given FilterColumn)
+    /// </summary>
+    public string FilterQuery { get; set; }
+
+    /// <summary>
     /// Private constructor called by the CreateAsync method.
     /// </summary>
     private ApiResult(
@@ -105,8 +116,20 @@ public class ApiResult<T>
         int pageIndex,
         int pageSize,
         string sortColumn = null,
-        string sortOrder = null)
+        string sortOrder = null,
+        string filterColumn = null,
+        string filterQuery = null)
     {
+        if (!string.IsNullOrEmpty(filterColumn)
+            && !string.IsNullOrEmpty(filterQuery)
+            && IsValidProperty(filterColumn))
+        {
+            source = source.Where(
+                string.Format("{0}.StartsWith(@0)", filterColumn),
+                filterQuery
+            );
+        }
+
         int count = await source.CountAsync();
         if (!string.IsNullOrEmpty(sortColumn)
             && IsValidProperty(sortColumn))
