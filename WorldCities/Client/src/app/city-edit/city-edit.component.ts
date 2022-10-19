@@ -65,23 +65,26 @@ export class CityEditComponent implements OnInit {
       city.lat = this.form.controls['lat'].value;
       city.lon = this.form.controls['lon'].value;
       city.countryId = +this.form.controls['countryId'].value;
-      this.http.put<ICity>(this.baseApiUrl + 'cities/' + city.id, city)
-        .subscribe({
-          next: response => {
-            console.log(`The City with id: ${city!.id} has been updated`);
-            this.router.navigate(['/cities']);
-          },
-          error: error => console.log(error)
-        });
-    } else {
-      this.http.post<ICity>(this.baseApiUrl + 'cities', city)
-        .subscribe({
-          next: response => {
-            console.log(`The City id: ${response.id} has been created`);
-            this.router.navigate(['/cities']);
-          },
-          error: error => console.log(error)
-        });
+
+      if (this.id) {
+        this.http.put<ICity>(this.baseApiUrl + 'cities/' + city.id, city)
+          .subscribe({
+            next: response => {
+              console.log(`The City with id: ${city!.id} has been updated`);
+              this.router.navigate(['/cities']);
+            },
+            error: error => console.log(error)
+          });
+      } else {
+        this.http.post<ICity>(this.baseApiUrl + 'cities', city)
+          .subscribe({
+            next: response => {
+              console.log(`The City id: ${response.id} has been created`);
+              this.router.navigate(['/cities']);
+            },
+            error: error => console.log(error)
+          });
+      }
     }
   }
 
