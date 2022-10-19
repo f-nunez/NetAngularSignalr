@@ -1,3 +1,4 @@
+using System.Linq.Dynamic.Core;
 using Fnunez.Nas.WorldCities.API.Data;
 using Fnunez.Nas.WorldCities.API.Data.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -107,6 +108,21 @@ public class CountriesController : ControllerBase
         await _context.SaveChangesAsync();
 
         return NoContent();
+    }
+
+    [HttpPost]
+    [Route("ExistsField")]
+    public bool ExistsField(
+        int countryId,
+        string fieldName,
+        string fieldValue)
+    {
+        return (ApiResult<Country>.IsValidProperty(fieldName, true))
+            ? _context.Countries.Any(
+                string.Format("{0} == @0 && Id != @1", fieldName),
+                fieldValue,
+                countryId)
+            : false;
     }
 
     private bool CountryExists(int id)
