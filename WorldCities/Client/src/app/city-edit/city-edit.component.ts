@@ -1,9 +1,11 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { ICity } from '../shared/models/city';
+import { ICountry } from '../shared/models/country';
 
 @Component({
   selector: 'app-city-edit',
@@ -15,6 +17,8 @@ export class CityEditComponent implements OnInit {
   title?: string;
   form!: FormGroup;
   city?: ICity;
+  id?: number;
+  countries?: ICountry[];
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -24,18 +28,26 @@ export class CityEditComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = new FormGroup({
-      name: new FormControl(''),
-      lat: new FormControl(''),
-      lon: new FormControl('')
-    });
+      name: new FormControl('', Validators.required),
+      lat: new FormControl('', Validators.required),
+      lon: new FormControl('', Validators.required),
+      countryId: new FormControl('', Validators.required)
+    }, null, this.existsCity());
 
     this.loadData();
   }
 
   loadData() {
+    this.loadCountries();
     let idParam = this.activatedRoute.snapshot.paramMap.get('id');
-    let id = idParam ? +idParam : 0;
-    this.http.get<ICity>(this.baseApiUrl + 'cities/' + id)
+    this.id = idParam ? +idParam : 0;
+
+    if (!this.id) {
+      this.title = 'Create a new City';
+      return;
+    }
+
+    this.http.get<ICity>(this.baseApiUrl + 'cities/' + this.id)
       .subscribe({
         next: response => {
           this.city = response;
@@ -47,18 +59,58 @@ export class CityEditComponent implements OnInit {
   }
 
   onSubmit() {
-    let city = this.city;
+    let city = this.id ? this.city : <ICity>{};
+    if (city) {
+      city.name = this.form.controls['name'].value;
+      city.lat = this.form.controls['lat'].value;
+      city.lon = this.form.controls['lon'].value;
+      city.countryId = +this.form.controls['countryId'].value;
+      this.http.put<ICity>(this.baseApiUrl + 'cities/' + city.id, city)
+        .subscribe({
+          next: response => {
+            console.log(`The City with id: ${city!.id} has been updated`);
+            this.router.navigate(['/cities']);
+          },
+          error: error => console.log(error)
+        });
+    } else {
+      this.http.post<ICity>(this.baseApiUrl + 'cities', city)
+        .subscribe({
+          next: response => {
+            console.log(`The City id: ${response.id} has been created`);
+            this.router.navigate(['/cities']);
+          },
+          error: error => console.log(error)
+        });
+    }
+  }
 
-    if (!city) return;
+  existsCity() {
+    return (control: AbstractControl): Observable<{ [key: string]: any } | null> => {
+      let city = <ICity>{};
+      city.id = this.id ? this.id : 0;
+      city.name = this.form.controls['name'].value;
+      city.lat = this.form.controls['lat'].value;
+      city.lon = this.form.controls['lon'].value;
+      city.countryId = +this.form.controls['countryId'].value;
 
-    city.name = this.form.controls['name'].value;
-    city.lat = this.form.controls['lat'].value;
-    city.lon = this.form.controls['lon'].value;
-    this.http.put<ICity>(this.baseApiUrl + 'cities/' + city.id, city)
+      return this.http.post<boolean>(this.baseApiUrl + 'cities/existscity', city)
+        .pipe(map(response => {
+          return response ? { existsCity: true } : null;
+        }));
+    };
+  }
+
+  private loadCountries() {
+    var params = new HttpParams()
+      .set("pageIndex", "0")
+      .set("pageSize", "9999")
+      .set("sortColumn", "name");
+
+    this.http.get<any>(this.baseApiUrl + 'countries', { params })
       .subscribe({
         next: response => {
-          console.log(`The City with id: ${city!.id} has been updated`);
-          this.router.navigate(['/cities']);
+          this.countries = response.data;
         },
         error: error => console.log(error)
       });
