@@ -112,6 +112,18 @@ public class CitiesController : ControllerBase
         return NoContent();
     }
 
+    [HttpPost]
+    public bool ExistsCity(City city)
+    {
+        return _context.Cities.Any(
+            e => e.Name == city.Name
+            && e.Lat == city.Lat
+            && e.Lon == city.Lon
+            && e.CountryId == city.CountryId
+            && e.Id != city.Id
+        );
+    }
+
     private bool CityExists(int id)
     {
         return _context.Cities.Any(e => e.Id == id);
