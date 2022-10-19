@@ -3,6 +3,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { ICity } from '../shared/models/city';
 
@@ -17,6 +18,7 @@ export class CitiesComponent implements OnInit {
   displayedColumns: string[] = ['id', 'name', 'lat', 'lon'];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
+  filterTextChanged: Subject<string> = new Subject<string>();
   defaultPageIndex: number = 0;
   defaultPageSize: number = 10;
   defaultSortColumn: string = 'name';
@@ -65,6 +67,18 @@ export class CitiesComponent implements OnInit {
     pageEvent.pageSize = this.defaultPageSize;
     this.filterQuery = query;
     this.getData(pageEvent);
+  }
+
+  onFilterTextChanged(filterText: string) {
+    if (this.filterTextChanged.observers.length === 0) {
+      this.filterTextChanged
+        .pipe(debounceTime(1000), distinctUntilChanged())
+        .subscribe(query => {
+          this.loadData(query);
+        });
+    }
+    
+    this.filterTextChanged.next(filterText);
   }
 
 }
