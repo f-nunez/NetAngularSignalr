@@ -113,6 +113,7 @@ public class CitiesController : ControllerBase
     }
 
     [HttpPost]
+    [Route("ExistsCity")]
     public bool ExistsCity(City city)
     {
         return _context.Cities.Any(
