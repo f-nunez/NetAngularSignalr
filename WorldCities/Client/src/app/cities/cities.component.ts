@@ -15,7 +15,7 @@ import { ICity } from '../shared/models/city';
 export class CitiesComponent implements OnInit {
   baseApiUrl: string = environment.baseApiUrl;
   cities!: MatTableDataSource<ICity>;
-  displayedColumns: string[] = ['id', 'name', 'lat', 'lon'];
+  displayedColumns: string[] = ['id', 'name', 'lat', 'lon', 'countryName'];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   filterTextChanged: Subject<string> = new Subject<string>();
@@ -77,7 +77,7 @@ export class CitiesComponent implements OnInit {
           this.loadData(query);
         });
     }
-    
+
     this.filterTextChanged.next(filterText);
   }
 
