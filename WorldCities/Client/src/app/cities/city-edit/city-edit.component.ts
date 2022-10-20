@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { map, Observable } from 'rxjs';
+import { BaseFormComponent } from 'src/app/shared/components/base-form/base-form.component';
 import { environment } from 'src/environments/environment';
 import { ICity } from '../../shared/models/city';
 import { ICountry } from '../../shared/models/country';
@@ -12,10 +13,9 @@ import { ICountry } from '../../shared/models/country';
   templateUrl: './city-edit.component.html',
   styleUrls: ['./city-edit.component.scss']
 })
-export class CityEditComponent implements OnInit {
+export class CityEditComponent extends BaseFormComponent implements OnInit {
   baseApiUrl: string = environment.baseApiUrl;
   title?: string;
-  form!: FormGroup;
   city?: ICity;
   id?: number;
   countries?: ICountry[];
@@ -23,14 +23,21 @@ export class CityEditComponent implements OnInit {
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private http: HttpClient
-  ) { }
+    private http: HttpClient) {
+    super();
+  }
 
   ngOnInit(): void {
     this.form = new FormGroup({
       name: new FormControl('', Validators.required),
-      lat: new FormControl('', Validators.required),
-      lon: new FormControl('', Validators.required),
+      lat: new FormControl('', [
+        Validators.required,
+        Validators.pattern(/^[-]?[0-9]+(\.[0-9]{1,4})?$/)
+      ]),
+      lon: new FormControl('', [
+        Validators.required,
+        Validators.pattern(/^[-]?[0-9]+(\.[0-9]{1,4})?$/)
+      ]),
       countryId: new FormControl('', Validators.required)
     }, null, this.existsCity());
 
