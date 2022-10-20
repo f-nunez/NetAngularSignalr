@@ -1,5 +1,6 @@
 using System.Linq.Dynamic.Core;
 using Fnunez.Nas.WorldCities.API.Data;
+using Fnunez.Nas.WorldCities.API.Data.Dtos;
 using Fnunez.Nas.WorldCities.API.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,7 +20,7 @@ public class CountriesController : ControllerBase
 
     // GET: api/Countries
     [HttpGet]
-    public async Task<ActionResult<ApiResult<Country>>> GetCountries(
+    public async Task<ActionResult<ApiResult<CountryDto>>> GetCountries(
         int pageIndex = 0,
         int pageSize = 10,
         string sortColumn = null,
@@ -27,8 +28,16 @@ public class CountriesController : ControllerBase
         string filterColumn = null,
         string filterQuery = null)
     {
-        return await ApiResult<Country>.CreateAsync(
-            _context.Countries.AsNoTracking(),
+        return await ApiResult<CountryDto>.CreateAsync(
+            _context.Countries.AsNoTracking()
+                .Select(c => new CountryDto()
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    ISO2 = c.ISO2,
+                    ISO3 = c.ISO3,
+                    TotCities = c.Cities!.Count
+                }),
             pageIndex,
             pageSize,
             sortColumn,

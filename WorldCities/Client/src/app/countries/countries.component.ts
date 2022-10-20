@@ -15,7 +15,7 @@ import { ICountry } from '../shared/models/country';
 export class CountriesComponent implements OnInit {
   baseApiUrl: string = environment.baseApiUrl;
   countries!: MatTableDataSource<ICountry>;
-  displayedColumns: string[] = ['id', 'name', 'iso2', 'iso3'];
+  displayedColumns: string[] = ['id', 'name', 'iso2', 'iso3', 'totCities'];
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
   filterTextChanged: Subject<string> = new Subject<string>();

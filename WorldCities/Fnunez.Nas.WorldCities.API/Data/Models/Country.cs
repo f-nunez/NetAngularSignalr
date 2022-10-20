@@ -33,10 +33,28 @@ public class Country
     [JsonPropertyName("iso3")]
     public string ISO3 { get; set; } = null!;
     #endregion
+    #region Client-side properties
+    /// <summary>
+    /// The number of cities related to this country.
+    /// </summary>
+    [NotMapped]
+    public int TotCities
+    {
+        get
+        {
+            return (Cities != null)
+                ? Cities.Count
+                : _TotCities;
+        }
+        set { _TotCities = value; }
+    }
+    private int _TotCities = 0;
+    #endregion
     #region Navigation Properties
     /// <summary>
     /// A collection of all the cities related to this country.
     /// </summary>
+    [JsonIgnore]
     public ICollection<City> Cities { get; set; } = null!;
     #endregion
 }
