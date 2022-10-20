@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { map, Observable } from 'rxjs';
+import { BaseFormComponent } from 'src/app/shared/components/base-form/base-form.component';
 import { ICountry } from 'src/app/shared/models/country';
 import { environment } from 'src/environments/environment';
 
@@ -11,10 +12,9 @@ import { environment } from 'src/environments/environment';
   templateUrl: './country-edit.component.html',
   styleUrls: ['./country-edit.component.scss']
 })
-export class CountryEditComponent implements OnInit {
+export class CountryEditComponent extends BaseFormComponent implements OnInit {
   baseApiUrl: string = environment.baseApiUrl;
   title?: string;
-  form!: FormGroup;
   country?: ICountry;
   id?: number;
   countries?: ICountry[];
@@ -23,7 +23,9 @@ export class CountryEditComponent implements OnInit {
     private fb: FormBuilder,
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private http: HttpClient) { }
+    private http: HttpClient) {
+    super();
+  }
 
   ngOnInit(): void {
     this.form = this.fb.group({
