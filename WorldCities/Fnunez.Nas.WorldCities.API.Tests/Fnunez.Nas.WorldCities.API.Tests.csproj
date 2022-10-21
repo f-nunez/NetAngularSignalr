@@ -23,4 +23,8 @@
     </PackageReference>
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Fnunez.Nas.WorldCities.API\Fnunez.Nas.WorldCities.API.csproj" />
+  </ItemGroup>
+
 </Project>
