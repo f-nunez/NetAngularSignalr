@@ -11,6 +11,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "WorldCities", "WorldCities"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fnunez.Nas.WorldCities.API", "WorldCities\Fnunez.Nas.WorldCities.API\Fnunez.Nas.WorldCities.API.csproj", "{F8BDC51F-1655-4C46-8157-5B1A1F77392F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fnunez.Nas.WorldCities.API.Tests", "WorldCities\Fnunez.Nas.WorldCities.API.Tests\Fnunez.Nas.WorldCities.API.Tests.csproj", "{3F36BDF9-6748-4ACD-BD06-76B900F5F3CE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -28,9 +30,14 @@ Global
 		{F8BDC51F-1655-4C46-8157-5B1A1F77392F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8BDC51F-1655-4C46-8157-5B1A1F77392F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8BDC51F-1655-4C46-8157-5B1A1F77392F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F36BDF9-6748-4ACD-BD06-76B900F5F3CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F36BDF9-6748-4ACD-BD06-76B900F5F3CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F36BDF9-6748-4ACD-BD06-76B900F5F3CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F36BDF9-6748-4ACD-BD06-76B900F5F3CE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{EBF4C91E-0CCA-4205-9E9A-02BDB433A64A} = {101CFC72-575A-4567-A7AE-DDDFA276164A}
 		{F8BDC51F-1655-4C46-8157-5B1A1F77392F} = {7421A181-DFEF-4871-89CD-A0ABC4F427CB}
+		{3F36BDF9-6748-4ACD-BD06-76B900F5F3CE} = {7421A181-DFEF-4871-89CD-A0ABC4F427CB}
 	EndGlobalSection
 EndGlobal
