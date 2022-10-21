@@ -1,4 +1,3 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
@@ -6,6 +5,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { ICity } from '../shared/models/city';
+import { CityService } from './city.service';
 
 @Component({
   selector: 'app-cities',
@@ -26,30 +26,36 @@ export class CitiesComponent implements OnInit {
   defaultFilterColumn: string = 'name';
   filterQuery?: string;
 
-  constructor(private http: HttpClient) { }
+  constructor(private cityService: CityService) { }
 
   ngOnInit(): void {
     this.loadData();
   }
 
   getData(pageEvent: PageEvent) {
-    let params = new HttpParams()
-      .set('pageIndex', pageEvent.pageIndex.toString())
-      .set('pageSize', pageEvent.pageSize.toString())
-      .set('sortColumn', this.sort
-        ? this.sort.active
-        : this.defaultSortColumn)
-      .set('sortOrder', this.sort
-        ? this.sort.direction
-        : this.defaultSortOrder);
+    let sortColumn = (this.sort)
+      ? this.sort.active
+      : this.defaultSortColumn;
 
-    if (this.filterQuery) {
-      params = params
-        .set("filterColumn", this.defaultFilterColumn)
-        .set("filterQuery", this.filterQuery);
-    }
+    let sortOrder = (this.sort)
+      ? this.sort.direction
+      : this.defaultSortOrder;
 
-    this.http.get<any>(this.baseApiUrl + 'cities', { params })
+    let filterColumn = (this.filterQuery)
+      ? this.defaultFilterColumn
+      : null;
+
+    let filterQuery = (this.filterQuery)
+      ? this.filterQuery
+      : null;
+
+    this.cityService.getData(
+      pageEvent.pageIndex,
+      pageEvent.pageSize,
+      sortColumn,
+      sortOrder,
+      filterColumn,
+      filterQuery)
       .subscribe({
         next: response => {
           this.cities = new MatTableDataSource<ICity>(response.data);
