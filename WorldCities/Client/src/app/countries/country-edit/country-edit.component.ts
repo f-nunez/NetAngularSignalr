@@ -1,4 +1,3 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { AbstractControl, AsyncValidatorFn, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -6,6 +5,7 @@ import { map, Observable } from 'rxjs';
 import { BaseFormComponent } from 'src/app/shared/components/base-form/base-form.component';
 import { ICountry } from 'src/app/shared/models/country';
 import { environment } from 'src/environments/environment';
+import { CountryService } from '../country.service';
 
 @Component({
   selector: 'app-country-edit',
@@ -23,7 +23,7 @@ export class CountryEditComponent extends BaseFormComponent implements OnInit {
     private fb: FormBuilder,
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private http: HttpClient) {
+    private countryService: CountryService) {
     super();
   }
 
@@ -56,7 +56,7 @@ export class CountryEditComponent extends BaseFormComponent implements OnInit {
     let idParam = this.activatedRoute.snapshot.paramMap.get('id');
     this.id = idParam ? +idParam : 0;
     if (this.id) {
-      this.http.get<ICountry>(this.baseApiUrl + "countries/" + this.id)
+      this.countryService.get(this.id)
         .subscribe({
           next: response => {
             this.country = response;
@@ -78,7 +78,7 @@ export class CountryEditComponent extends BaseFormComponent implements OnInit {
       country.iso2 = this.form.controls['iso2'].value;
       country.iso3 = this.form.controls['iso3'].value;
       if (this.id) {
-        this.http.put<ICountry>(this.baseApiUrl + 'countries/' + country.id, country)
+        this.countryService.put(country)
           .subscribe({
             next: response => {
               console.log("Country " + country!.id + " has been updated.");
@@ -88,8 +88,7 @@ export class CountryEditComponent extends BaseFormComponent implements OnInit {
           });
       }
       else {
-        this.http
-          .post<ICountry>(this.baseApiUrl + 'countries', country)
+        this.countryService.post(country)
           .subscribe({
             next: response => {
               console.log("Country " + response.id + " has been created.");
@@ -103,14 +102,12 @@ export class CountryEditComponent extends BaseFormComponent implements OnInit {
 
   existsField(fieldName: string): AsyncValidatorFn {
     return (control: AbstractControl): Observable<{ [key: string]: any } | null> => {
-      var params = new HttpParams()
-        .set("countryId", (this.id) ? this.id.toString() : "0")
-        .set("fieldName", fieldName)
-        .set("fieldValue", control.value);
-
-      return this.http.post<boolean>(this.baseApiUrl + 'countries/existsfield', null, { params })
+      return this.countryService.existsField(
+        this.id ?? 0,
+        fieldName,
+        control.value)
         .pipe(map(result => {
-          return (result ? { existsField: true } : null);
+          return (result ? { isDupeField: true } : null);
         }));
     }
   }
