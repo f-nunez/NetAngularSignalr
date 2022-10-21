@@ -1,3 +1,4 @@
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Dynamic.Core;
 using System.Reflection;
@@ -68,7 +69,7 @@ public class ApiResult<T>
     /// Filter Column name (or null if none set)
     /// </summary>
     public string FilterColumn { get; set; }
-    
+
     /// <summary>
     /// Filter Query string 
     /// (to be used within the given FilterColumn)
@@ -146,6 +147,9 @@ public class ApiResult<T>
         source = source
             .Skip(pageIndex * pageSize)
             .Take(pageSize);
+
+        // retrieve the SQL query (for debug purposes)
+        var sql = source.ToParametrizedSql();
 
         List<T> data = await source.ToListAsync();
 
