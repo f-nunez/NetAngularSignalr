@@ -1,9 +1,10 @@
 using Fnunez.Nas.WorldCities.API.Data.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Fnunez.Nas.WorldCities.API.Data;
 
-public class ApplicationDbContext : DbContext
+public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
     public DbSet<City> Cities => Set<City>();
     public DbSet<Country> Countries => Set<Country>();
