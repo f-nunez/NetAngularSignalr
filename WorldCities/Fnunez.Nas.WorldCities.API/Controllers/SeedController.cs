@@ -1,6 +1,7 @@
 using System.Security;
 using Fnunez.Nas.WorldCities.API.Data;
 using Fnunez.Nas.WorldCities.API.Data.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
@@ -11,15 +12,110 @@ namespace Fnunez.Nas.WorldCities.API.Controllers;
 [ApiController]
 public class SeedController : ControllerBase
 {
+    private readonly IConfiguration _configuration;
     private readonly ApplicationDbContext _context;
     private readonly IWebHostEnvironment _env;
+    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly UserManager<ApplicationUser> _userManager;
 
     public SeedController(
+        IConfiguration configuration,
         ApplicationDbContext context,
-        IWebHostEnvironment env)
+        IWebHostEnvironment env,
+        RoleManager<IdentityRole> roleManager,
+        UserManager<ApplicationUser> userManager
+        )
     {
+        _configuration = configuration;
         _context = context;
         _env = env;
+        _roleManager = roleManager;
+        _userManager = userManager;
+    }
+
+    [HttpGet]
+    public async Task<ActionResult> CreateDefaultUsers()
+    {
+        string role_RegisteredUser = "RegisteredUser";
+        string role_Administrator = "Administrator";
+
+        if (await _roleManager.FindByNameAsync(role_RegisteredUser) == null)
+            await _roleManager.CreateAsync(
+                new IdentityRole(role_RegisteredUser));
+
+        if (await _roleManager.FindByNameAsync(role_Administrator) == null)
+            await _roleManager.CreateAsync(
+                new IdentityRole(role_Administrator));
+
+        var addedUserList = new List<ApplicationUser>();
+
+        string emailForAdmin = "admin@email.com";
+        if (await _userManager.FindByNameAsync(emailForAdmin) == null)
+        {
+            var userAsAdmin = new ApplicationUser()
+            {
+                SecurityStamp = Guid.NewGuid().ToString(),
+                UserName = emailForAdmin,
+                Email = emailForAdmin,
+            };
+
+            await _userManager.CreateAsync(
+                userAsAdmin,
+                _configuration["DefaultPasswords:Administrator"]
+            );
+
+            await _userManager.AddToRoleAsync(
+                userAsAdmin,
+                role_RegisteredUser
+            );
+
+            await _userManager.AddToRoleAsync(
+                userAsAdmin,
+                role_Administrator
+            );
+
+            userAsAdmin.EmailConfirmed = true;
+
+            userAsAdmin.LockoutEnabled = false;
+
+            addedUserList.Add(userAsAdmin);
+        }
+
+        string emailForUser = "user@email.com";
+        if (await _userManager.FindByNameAsync(emailForUser) == null)
+        {
+            var userAsUser = new ApplicationUser()
+            {
+                SecurityStamp = Guid.NewGuid().ToString(),
+                UserName = emailForUser,
+                Email = emailForUser
+            };
+
+            await _userManager.CreateAsync(
+                userAsUser,
+                _configuration["DefaultPasswords:RegisteredUser"]
+            );
+
+            await _userManager.AddToRoleAsync(
+                userAsUser,
+                role_RegisteredUser
+            );
+
+            userAsUser.EmailConfirmed = true;
+
+            userAsUser.LockoutEnabled = false;
+
+            addedUserList.Add(userAsUser);
+        }
+
+        if (addedUserList.Count > 0)
+            await _context.SaveChangesAsync();
+
+        return new JsonResult(new
+        {
+            Count = addedUserList.Count,
+            Users = addedUserList
+        });
     }
 
     [HttpGet]
@@ -29,9 +125,10 @@ public class SeedController : ControllerBase
         if (!_env.IsDevelopment())
             throw new SecurityException("Not allowed");
 
-        var path = System.IO.Path.Combine(
+        string path = Path.Combine(
             _env.ContentRootPath,
-            "Data/Source/worldcities.xlsx");
+            "Data/Source/worldcities.xlsx"
+        );
 
         using var stream = System.IO.File.OpenRead(path);
         using var excelPackage = new ExcelPackage(stream);
@@ -40,11 +137,10 @@ public class SeedController : ControllerBase
         var worksheet = excelPackage.Workbook.Worksheets[0];
 
         // define how many rows we want to process 
-        var nEndRow = worksheet.Dimension.End.Row;
+        int nEndRow = worksheet.Dimension.End.Row;
 
-        // initialize the record counters 
-        var numberOfCountriesAdded = 0;
-        var numberOfCitiesAdded = 0;
+        int numberOfCountriesAdded = 0;
+        int numberOfCitiesAdded = 0;
 
         // create a lookup dictionary 
         // containing all the countries already existing 
@@ -57,17 +153,19 @@ public class SeedController : ControllerBase
         for (int nRow = 2; nRow <= nEndRow; nRow++)
         {
             var row = worksheet.Cells[
-                nRow, 1, nRow, worksheet.Dimension.End.Column];
+                nRow,
+                1,
+                nRow,
+                worksheet.Dimension.End.Column
+            ];
 
             var countryName = row[nRow, 5].GetValue<string>();
             var iso2 = row[nRow, 6].GetValue<string>();
             var iso3 = row[nRow, 7].GetValue<string>();
 
-            // skip this country if it already exists in the database
             if (countriesByName.ContainsKey(countryName))
                 continue;
 
-            // create the Country entity and fill it with xlsx data 
             var country = new Country
             {
                 Name = countryName,
@@ -75,17 +173,13 @@ public class SeedController : ControllerBase
                 ISO3 = iso3
             };
 
-            // add the new country to the DB context 
             await _context.Countries.AddAsync(country);
 
-            // store the country in our lookup to retrieve its Id later on
             countriesByName.Add(countryName, country);
 
-            // increment the counter 
             numberOfCountriesAdded++;
         }
 
-        // save all the countries into the Database 
         if (numberOfCountriesAdded > 0)
             await _context.SaveChangesAsync();
 
@@ -103,8 +197,12 @@ public class SeedController : ControllerBase
         // iterates through all rows, skipping the first one 
         for (int nRow = 2; nRow <= nEndRow; nRow++)
         {
-            var row = worksheet.Cells[
-                nRow, 1, nRow, worksheet.Dimension.End.Column];
+            ExcelRange row = worksheet.Cells[
+                nRow,
+                1,
+                nRow,
+                worksheet.Dimension.End.Column
+            ];
 
             var name = row[nRow, 1].GetValue<string>();
             var nameAscii = row[nRow, 2].GetValue<string>();
@@ -112,10 +210,8 @@ public class SeedController : ControllerBase
             var lon = row[nRow, 4].GetValue<decimal>();
             var countryName = row[nRow, 5].GetValue<string>();
 
-            // retrieve country Id by countryName
-            var countryId = countriesByName[countryName].Id;
+            int countryId = countriesByName[countryName].Id;
 
-            // skip this city if it already exists in the database
             if (cities.ContainsKey((
                 Name: name,
                 Lat: lat,
@@ -123,7 +219,6 @@ public class SeedController : ControllerBase
                 CountryId: countryId)))
                 continue;
 
-            // create the City entity and fill it with xlsx data 
             var city = new City
             {
                 Name = name,
@@ -132,14 +227,11 @@ public class SeedController : ControllerBase
                 CountryId = countryId
             };
 
-            // add the new city to the DB context 
             _context.Cities.Add(city);
 
-            // increment the counter 
             numberOfCitiesAdded++;
         }
 
-        // save all the cities into the Database 
         if (numberOfCitiesAdded > 0)
             await _context.SaveChangesAsync();
 
