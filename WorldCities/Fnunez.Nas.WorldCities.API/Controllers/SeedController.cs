@@ -1,6 +1,7 @@
 using System.Security;
 using Fnunez.Nas.WorldCities.API.Data;
 using Fnunez.Nas.WorldCities.API.Data.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ namespace Fnunez.Nas.WorldCities.API.Controllers;
 
 [Route("api/[controller]/[action]")]
 [ApiController]
+[Authorize(Roles = "Administrator")]
 public class SeedController : ControllerBase
 {
     private readonly IConfiguration _configuration;
