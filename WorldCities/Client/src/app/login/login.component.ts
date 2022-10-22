@@ -41,8 +41,8 @@ export class LoginComponent extends BaseFormComponent implements OnInit {
         next: response => {
           console.log(response);
           this.loginResult = response;
-          if (response.success && response.token) {
-            localStorage.setItem(this.authService.tokenKey, response.token);
+          if (response.success) {
+            this.router.navigate(["/"]);
           }
         },
         error: error => {
