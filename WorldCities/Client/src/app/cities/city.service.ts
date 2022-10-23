@@ -39,7 +39,7 @@ export class CityService extends BaseApiService<ICity> {
   }
 
   get(id: number): Observable<ICity> {
-    const url: string = this.getUrl('cities' + id);
+    const url: string = this.getUrl('cities/' + id);
     return this.http.get<ICity>(url);
   }
 
