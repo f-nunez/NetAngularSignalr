@@ -31,6 +31,16 @@ builder.Services.AddCors(options =>
         policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200");
     });
 });
+
+builder.Services.AddCors(options =>
+    options.AddPolicy(name: "AngularPolicy",
+        cfg =>
+        {
+            cfg.AllowAnyHeader();
+            cfg.AllowAnyMethod();
+            cfg.WithOrigins(builder.Configuration["AllowedCORS"]);
+        }));
+
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -93,6 +103,10 @@ app.UseAuthentication();
 
 app.UseAuthorization();
 
+app.UseCors("AngularPolicy");
+
 app.MapControllers();
+
+app.MapMethods("/api/heartbeat", new[] { "HEAD" }, () => Results.Ok());
 
 app.Run();
