@@ -14,6 +14,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from 'src/environments/environment';
+import { ConnectionServiceModule, ConnectionServiceOptions, ConnectionServiceOptionsToken } from 'angular-connection-service';
 
 @NgModule({
   declarations: [
@@ -36,9 +37,15 @@ import { environment } from 'src/environments/environment';
       // Register service worker as soon as the app is stable
       // or after 30 seconds
       registrationStrategy: 'registerWhenStable:30000'
-    })
+    }),
+    ConnectionServiceModule
   ],
-  providers: [],
+  providers: [
+    {
+      provide: ConnectionServiceOptionsToken,
+      useValue: <ConnectionServiceOptions>{ heartbeatUrl: environment.baseApiUrl + 'heartbeat' }
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
