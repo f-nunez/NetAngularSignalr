@@ -1,4 +1,5 @@
 using Fnunez.Nas.HealthCheck.API;
+using Microsoft.AspNetCore.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,5 +59,11 @@ app.MapControllers();
 app.MapMethods("/api/heartbeat", new[] { "HEAD" }, () => Results.Ok());
 
 app.MapHub<HealthCheckHub>("/api/health-hub");
+
+app.MapGet("/api/broadcast/update2", async (IHubContext<HealthCheckHub> hub) =>
+{
+    await hub.Clients.All.SendAsync("Update", "test");
+    return Results.Text("Update message sent.");
+});
 
 app.Run();
