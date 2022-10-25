@@ -32,6 +32,8 @@ builder.Services.AddCors(options =>
             cfg.WithOrigins(builder.Configuration["AllowedCORS"]);
         }));
 
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
