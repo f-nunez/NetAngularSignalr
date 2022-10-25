@@ -57,4 +57,6 @@ app.MapControllers();
 
 app.MapMethods("/api/heartbeat", new[] { "HEAD" }, () => Results.Ok());
 
+app.MapHub<HealthCheckHub>("/api/health-hub");
+
 app.Run();
