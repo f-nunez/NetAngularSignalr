@@ -127,7 +127,7 @@ public class SeedController : ControllerBase
         if (!_env.IsDevelopment())
             throw new SecurityException("Not allowed");
 
-        string path = Path.Combine(
+        string path = System.IO.Path.Combine(
             _env.ContentRootPath,
             "Data/Source/worldcities.xlsx"
         );
